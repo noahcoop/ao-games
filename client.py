@@ -11,7 +11,7 @@ NUM_COLS = 7
 def check_empty(board):
   """Checks if no moves have been made on the board"""
   board = np.array(board)
-  return board.min() == 0
+  return board.max() == 0
 
 def determine_valid_moves(board):
   """Returns a list of up to 7 moves a player can make"""
@@ -50,14 +50,14 @@ def is_winning_move(player, board, row, column):
       return True
     
     #Vertical
-    elif (row >= 2) and board[row + 1][column] == player and board[row + 2][column] == player and board[row + 3][column] == player:
+    elif (row <= 2) and board[row + 1][column] == player and board[row + 2][column] == player and board[row + 3][column] == player:
       return True
   
     #Diagonal
-    elif column <= 3 and row >= 2 and board[row + 1][column + 1] == player and board[row + 2][column + 2] == player and board[row + 3][column + 3] == player:
+    elif column <= 3 and row <= 2 and board[row + 1][column + 1] == player and board[row + 2][column + 2] == player and board[row + 3][column + 3] == player:
       return True
   
-    elif column <= 3 and row >= 2 and board[row - 1][column - 1] == player and board[row - 2][column - 2] == player and board[row - 3][column - 3] == player:
+    elif column >= 3 and row >= 2 and board[row - 1][column - 1] == player and board[row - 2][column - 2] == player and board[row - 3][column - 3] == player:
       return True
 
     # TODO - Add remaining diagonal cases
