@@ -3,6 +3,7 @@
 import sys
 import json
 import socket
+import math
 import numpy as np
 
 NUM_ROWS = 6
@@ -24,14 +25,60 @@ def determine_valid_moves(board):
           break
         if row == NUM_ROWS - 1 and board[row][col] == 0:
           valid_moves.append([row,col])
-            
+
             
   return valid_moves
 
-def get_optimal_move(player, board, valid_moves):
-  # If we can win, return the column that makes us win
-  # If opponent can win next turn, then try to block opponent
+def check_board_for_winner(board):
+  return 1
+
+def find_score(board, player):
   pass
+
+def minimax(board, depth, alpha, beta, maximizePlayer, player):
+  opp = 2
+  if player == 2:
+    opp = 1
+
+  valid_moves = determine_valid_moves(board)
+  current_winner = check_board_for_winner(board)
+  if len(valid_moves) == 0 or current_winner != 0:
+    # TODO - base case, return the score of the current board
+    return None, 0
+  if depth == 0:
+    # TODO - return the score of the current board
+    return None, 0
+
+  if maximizePlayer:
+    value = -math.inf
+    column = valid_moves[0][1]
+    for row, col in valid_moves:
+      temp_board = board.copy()
+      temp_board[row][col] = player
+      new_score = minimax(temp_board, depth - 1, alpha, beta, False, player)[1]
+      if new_score > value:
+        value = new_score
+        column = col
+      alpha = max(alpha, value)
+      if alpha >= beta:
+        break
+    return column, value
+  else:
+    value = math.inf
+    for row, col in valid_moves:
+      temp_board = board.copy()
+      temp_board[row][col] = opp
+      new_score = minimax(temp_board, depth - 1, alpha, beta, True, player)[1]
+      if new_score > value:
+        value = new_score
+        column = col
+      beta = min(beta, value)
+      if beta <= alpha:
+        break
+    return column, value
+
+
+
 
 def is_winning_move(player, board, row, column):
     '''Checks move to see if it is a winning move'''
@@ -85,7 +132,8 @@ def get_move(player, board):
     if is_winning_move(opp, board, row, col):
       return {"column": col}
   
-  # TODO determine best move
+  # Looking 5 turns ahead
+  column, score = minimax(board, 5, -math.inf, math.inf, True, player)
   return {"column": 1}
 
 def prepare_response(move):
