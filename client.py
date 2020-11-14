@@ -29,11 +29,6 @@ def determine_valid_moves(board):
             
   return valid_moves
 
-def check_board_for_winner(board):
-  return 1
-
-def find_score(board, player):
-  pass
 
 def minimax(board, depth, alpha, beta, maximizePlayer, player):
   opp = 2
@@ -41,13 +36,17 @@ def minimax(board, depth, alpha, beta, maximizePlayer, player):
     opp = 1
 
   valid_moves = determine_valid_moves(board)
-  current_winner = check_board_for_winner(board)
-  if len(valid_moves) == 0 or current_winner != 0:
-    # TODO - base case, return the score of the current board
+  player_win = is_won_board(player, board)
+  opp_win = is_won_board(opp, board)
+
+  if player_win:
+    return None, math.inf
+  elif opp_win:
+    return None, -math.inf
+  elif len(valid_moves) == 0:
     return None, 0
   if depth == 0:
-    # TODO - return the score of the current board
-    return None, 0
+    return None, find_score(board, player)
 
   if maximizePlayer:
     value = -math.inf
@@ -65,6 +64,7 @@ def minimax(board, depth, alpha, beta, maximizePlayer, player):
     return column, value
   else:
     value = math.inf
+    column = valid_moves[0][1]
     for row, col in valid_moves:
       temp_board = board.copy()
       temp_board[row][col] = opp
@@ -79,36 +79,117 @@ def minimax(board, depth, alpha, beta, maximizePlayer, player):
 
 
 
+def find_score(board, player):
+  score = 0
+  for c in range(NUM_COLS-3):
+    for r in range(NUM_ROWS):
+      player_count = 0
+      opp_count = 0
+      empty_count = 0
+      for i in range(4):
+        if board[r][c + i] == 0:
+          empty_count += 1
+        elif board[r][c + i] == player:
+          player_count += 1
+        else:
+          opp_count += 1
 
-def is_winning_move(player, board, row, column):
-    '''Checks move to see if it is a winning move'''
+      if player_count == 3 and empty_count == 1:
+        score += 5
+      if player_count == 2 and empty_count == 2:
+        score += 3
+      if opp_count == 3 and empty_count == 1:
+        score -= 4
+      
 
-    #Horizontal
-    if column <= 3 and board[row][column + 1] == player and board[row][column + 2] == player and board[row][column + 3] == player:
-      return True
-          
-    elif column >= 3 and board[row][column - 1] == player and board[row][column - 2] == player and board[row][column - 3] == player:
-      return True
-          
-    elif (column >= 1 and column <= 4) and board[row][column - 1] == player and board[row][column + 1] == player and board[row][column + 1] == player:
-      return True
-    
-    elif (column >= 2 and column <= 5) and board[row][column + 1] == player and board[row][column - 1] == player and board[row][column - 2] == player:
-      return True
-    
-    #Vertical
-    elif (row <= 2) and board[row + 1][column] == player and board[row + 2][column] == player and board[row + 3][column] == player:
-      return True
-  
-    #Diagonal
-    elif column <= 3 and row <= 2 and board[row + 1][column + 1] == player and board[row + 2][column + 2] == player and board[row + 3][column + 3] == player:
-      return True
-  
-    elif column >= 3 and row >= 2 and board[row - 1][column - 1] == player and board[row - 2][column - 2] == player and board[row - 3][column - 3] == player:
-      return True
+  for c in range(NUM_COLS):
+    for r in range(NUM_ROWS-3):
+      for i in range(4):
+        player_count = 0
+        opp_count = 0
+        empty_count = 0
+        for i in range(4):
+          if board[r + i][c] == 0:
+            empty_count += 1
+          elif board[r + i][c] == player:
+            player_count += 1
+          else:
+            opp_count += 1
 
-    # TODO - Add remaining diagonal cases
-    return False
+        if player_count == 3 and empty_count == 1:
+          score += 5
+        if player_count == 2 and empty_count == 2:
+          score += 3
+        if opp_count == 3 and empty_count == 1:
+          score -= 4
+
+  for c in range(NUM_COLS-3):
+    for r in range(NUM_ROWS-3):
+      for i in range(4):
+        player_count = 0
+        opp_count = 0
+        empty_count = 0
+        for i in range(4):
+          if board[r + i][c + i] == 0:
+            empty_count += 1
+          elif board[r + i][c + i] == player:
+            player_count += 1
+          else:
+            opp_count += 1
+
+        if player_count == 3 and empty_count == 1:
+          score += 5
+        if player_count == 2 and empty_count == 2:
+          score += 3
+        if opp_count == 3 and empty_count == 1:
+          score -= 4
+
+  for c in range(NUM_COLS-3):
+    for r in range(3, NUM_ROWS):
+      for i in range(4):
+        player_count = 0
+        opp_count = 0
+        empty_count = 0
+        for i in range(4):
+          if board[r - i][c + i] == 0:
+            empty_count += 1
+          elif board[r - i][c + i] == player:
+            player_count += 1
+          else:
+            opp_count += 1
+
+        if player_count == 3 and empty_count == 1:
+          score += 5
+        if player_count == 2 and empty_count == 2:
+          score += 3
+        if opp_count == 3 and empty_count == 1:
+          score -= 4
+
+  return score
+
+
+def is_won_board(player, board):
+  for c in range(NUM_COLS-3):
+	  for r in range(NUM_ROWS):
+		  if board[r][c:c+4] == [player, player, player, player]:
+			  return True
+
+  for c in range(NUM_COLS):
+	  for r in range(NUM_ROWS-3):
+		  if board[r][c] == player and board[r+1][c] == player and board[r+2][c] == player and board[r+3][c] == player:
+			  return True
+
+  for c in range(NUM_COLS-3):
+    for r in range(NUM_ROWS-3):
+      if board[r][c] == player and board[r+1][c+1] == player and board[r+2][c+2] == player and board[r+3][c+3] == player:
+        return True
+
+  for c in range(NUM_COLS-3):
+    for r in range(3, NUM_ROWS):
+      if board[r][c] == player and board[r-1][c+1] == player and board[r-2][c+2] == player and board[r-3][c+3] == player:
+        return True
+
+  return False
   
     
 def get_move(player, board):
@@ -121,7 +202,9 @@ def get_move(player, board):
 
   # Determine if any of the valid moves are winning moves
   for row, col in valid_moves:
-    if is_winning_move(player, board, row, col):
+    temp_board = board.copy()
+    temp_board[row][col] = player
+    if is_won_board(player, temp_board):
       return {"column": col}
 
   opp = 2
@@ -129,17 +212,22 @@ def get_move(player, board):
     opp = 1
 
   for row, col in valid_moves:
-    if is_winning_move(opp, board, row, col):
+    temp_board = board.copy()
+    temp_board[row][col] = opp
+    if is_won_board(opp, temp_board):
       return {"column": col}
   
   # Looking 5 turns ahead
-  column, score = minimax(board, 5, -math.inf, math.inf, True, player)
-  return {"column": 1}
+  column, score = minimax(board, 10, -math.inf, math.inf, True, player)
+  print(score)
+  return {"column": column}
+
 
 def prepare_response(move):
   response = '{}\n'.format(json.dumps(move))
   print('sending {!r}'.format(response))
   return response
+
 
 if __name__ == "__main__":
   port = int(sys.argv[1]) if (len(sys.argv) > 1 and sys.argv[1]) else 1337
