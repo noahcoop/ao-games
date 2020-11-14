@@ -38,26 +38,27 @@ def is_winning_move(player, board, row, column):
     #vertical/horizon/diagonal
     #Horizontal
     #need to handle out of bounds
-    if [row][column + 1] == player and [row][column + 2] == player and [row][column + 3] == player:
+    if column <= 3 and [row][column + 1] == player and [row][column + 2] == player and [row][column + 3] == player:
       return True
           
-    elif [row][column - 1] == player and [row][column - 2] == player and [row][column - 3] == player:
+    elif column >= 3 and [row][column - 1] == player and [row][column - 2] == player and [row][column - 3] == player:
       return True
           
-    elif [row][column - 1] == player and [row][column + 1] == player and [row][column + 1] == player:
+    elif (column >= 1 and column <= 4) and [row][column - 1] == player and [row][column + 1] == player and [row][column + 1] == player:
       return True
     
-    elif [row][column + 1] == player and [row][column - 1] == player and [row][column - 2] == player:
+    elif (column >= 2 and column <= 5) and [row][column + 1] == player and [row][column - 1] == player and [row][column - 2] == player:
       return True
     
     #Vertical
-    elif [row + 1][column] == player and [row + 2][column] == player and [row + 3][column] == player:
+    elif (row >= 2) and [row + 1][column] == player and [row + 2][column] == player and [row + 3][column] == player:
       return True
     #Diagonal
-    elif [row + 1][col + 1] == player and [row + 2][column + 2] == player and [row + 3][column + 3] == player:
+    elif column <= 3 and row >= 2 and [row + 1][column + 1] == player and [row + 2][column + 2] == player and [row + 3][column + 3] == player:
       return True
-    elif [row - 1][col - 1] == player and [row - 2][column - 2] == player and [row - 3][column - 3] == player:
+    elif column <= 3 and row >= 2 and [row - 1][column - 1] == player and [row - 2][column - 2] == player and [row - 3][column - 3] == player:
       return True
+    #to do 2 or more cases for diagonal
   
     
 def get_move(player, board):
@@ -67,7 +68,7 @@ def get_move(player, board):
 
   # TODO determine valid moves
   valid_moves = determine_valid_moves(board)
-
+  
   # TODO determine best move
   return {"column": 1}
 
