@@ -22,6 +22,10 @@ def determine_valid_moves(board):
         if board[row][col] != 0:
           valid_moves.append([row - 1, col])
           break
+        if row == NUM_ROWS - 1 and board[row][col] == 0:
+          valid_moves.append([row,col])
+            
+            
   return valid_moves
 
 def get_optimal_move(player, board, valid_moves):
@@ -30,7 +34,31 @@ def get_optimal_move(player, board, valid_moves):
   pass
 
 def is_winning_move(player, board, row, column):
-  pass
+    #check valid moves to see if any are winning moves
+    #vertical/horizon/diagonal
+    #Horizontal
+    #need to handle out of bounds
+    if [row][column + 1] == player and [row][column + 2] == player and [row][column + 3] == player:
+      return True
+          
+    elif [row][column - 1] == player and [row][column - 2] == player and [row][column - 3] == player:
+      return True
+          
+    elif [row][column - 1] == player and [row][column + 1] == player and [row][column + 1] == player:
+      return True
+    
+    elif [row][column + 1] == player and [row][column - 1] == player and [row][column - 2] == player:
+      return True
+    
+    #Vertical
+    elif [row + 1][column] == player and [row + 2][column] == player and [row + 3][column] == player:
+      return True
+    #Diagonal
+    elif [row + 1][col + 1] == player and [row + 2][column + 2] == player and [row + 3][column + 3] == player:
+      return True
+    elif [row - 1][col - 1] == player and [row - 2][column - 2] == player and [row - 3][column - 3] == player:
+      return True
+  
     
 def get_move(player, board):
   # TODO determine if board is empty
