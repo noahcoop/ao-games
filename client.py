@@ -34,40 +34,56 @@ def get_optimal_move(player, board, valid_moves):
   pass
 
 def is_winning_move(player, board, row, column):
-    #check valid moves to see if any are winning moves
-    #vertical/horizon/diagonal
+    '''Checks move to see if it is a winning move'''
+
     #Horizontal
-    #need to handle out of bounds
-    if column <= 3 and [row][column + 1] == player and [row][column + 2] == player and [row][column + 3] == player:
+    if column <= 3 and board[row][column + 1] == player and board[row][column + 2] == player and board[row][column + 3] == player:
       return True
           
-    elif column >= 3 and [row][column - 1] == player and [row][column - 2] == player and [row][column - 3] == player:
+    elif column >= 3 and board[row][column - 1] == player and board[row][column - 2] == player and board[row][column - 3] == player:
       return True
           
-    elif (column >= 1 and column <= 4) and [row][column - 1] == player and [row][column + 1] == player and [row][column + 1] == player:
+    elif (column >= 1 and column <= 4) and board[row][column - 1] == player and board[row][column + 1] == player and board[row][column + 1] == player:
       return True
     
-    elif (column >= 2 and column <= 5) and [row][column + 1] == player and [row][column - 1] == player and [row][column - 2] == player:
+    elif (column >= 2 and column <= 5) and board[row][column + 1] == player and board[row][column - 1] == player and board[row][column - 2] == player:
       return True
     
     #Vertical
-    elif (row >= 2) and [row + 1][column] == player and [row + 2][column] == player and [row + 3][column] == player:
+    elif (row >= 2) and board[row + 1][column] == player and board[row + 2][column] == player and board[row + 3][column] == player:
       return True
+  
     #Diagonal
-    elif column <= 3 and row >= 2 and [row + 1][column + 1] == player and [row + 2][column + 2] == player and [row + 3][column + 3] == player:
+    elif column <= 3 and row >= 2 and board[row + 1][column + 1] == player and board[row + 2][column + 2] == player and board[row + 3][column + 3] == player:
       return True
-    elif column <= 3 and row >= 2 and [row - 1][column - 1] == player and [row - 2][column - 2] == player and [row - 3][column - 3] == player:
+  
+    elif column <= 3 and row >= 2 and board[row - 1][column - 1] == player and board[row - 2][column - 2] == player and board[row - 3][column - 3] == player:
       return True
-    #to do 2 or more cases for diagonal
+
+    # TODO - Add remaining diagonal cases
+    return False
   
     
 def get_move(player, board):
-  # TODO determine if board is empty
+  # Determine if board is empty
   if check_empty(board):
     return {"column": 3}
 
-  # TODO determine valid moves
+  # Determine valid moves
   valid_moves = determine_valid_moves(board)
+
+  # Determine if any of the valid moves are winning moves
+  for row, col in valid_moves:
+    if is_winning_move(player, board, row, col):
+      return {"column": col}
+
+  opp = 2
+  if player == 2:
+    opp = 1
+
+  for row, col in valid_moves:
+    if is_winning_move(opp, board, row, col):
+      return {"column": col}
   
   # TODO determine best move
   return {"column": 1}
