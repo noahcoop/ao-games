@@ -3,6 +3,8 @@
 Referenced Articles:
   https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning
   https://medium.com/analytics-vidhya/artificial-intelligence-at-play-connect-four-minimax-algorithm-explained-3b5fc32e4a4f
+  https://softwareengineering.stackexchange.com/questions/263514/why-does-this-evaluation-function-work-in-a-connect-four-game-in-
+  
 """
 import sys
 import json

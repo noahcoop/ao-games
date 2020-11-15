@@ -1,7 +1,6 @@
 import unittest
 import client
-import socket
-import json
+
 
 
 empty = [[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0]]
