@@ -5,9 +5,17 @@ import json
 import socket
 import math
 import numpy as np
+from copy import deepcopy
 
 NUM_ROWS = 6
 NUM_COLS = 7
+
+evaluationTable = [[3, 4, 5, 7, 5, 4, 3], 
+                  [4, 6, 8, 10, 8, 6, 4],
+                  [5, 8, 11, 13, 11, 8, 5], 
+                  [5, 8, 11, 13, 11, 8, 5],
+                  [4, 6, 8, 10, 8, 6, 4],
+                  [3, 4, 5, 7, 5, 4, 3]]
 
 def check_empty(board):
   """Checks if no moves have been made on the board"""
@@ -26,7 +34,6 @@ def determine_valid_moves(board):
         if row == NUM_ROWS - 1 and board[row][col] == 0:
           valid_moves.append([row,col])
 
-            
   return valid_moves
 
 
@@ -46,13 +53,17 @@ def minimax(board, depth, alpha, beta, maximizePlayer, player):
   elif len(valid_moves) == 0:
     return None, 0
   if depth == 0:
-    return None, find_score(board, player)
+    turn = np.count_nonzero(np.array(board))
+    if turn > 15:
+      return None, noah_score(board, player)
+    else:
+      return None, sean_score(board, player)
 
   if maximizePlayer:
     value = -math.inf
     column = valid_moves[0][1]
     for row, col in valid_moves:
-      temp_board = board.copy()
+      temp_board = deepcopy(board)
       temp_board[row][col] = player
       new_score = minimax(temp_board, depth - 1, alpha, beta, False, player)[1]
       if new_score > value:
@@ -66,10 +77,10 @@ def minimax(board, depth, alpha, beta, maximizePlayer, player):
     value = math.inf
     column = valid_moves[0][1]
     for row, col in valid_moves:
-      temp_board = board.copy()
+      temp_board = deepcopy(board)
       temp_board[row][col] = opp
       new_score = minimax(temp_board, depth - 1, alpha, beta, True, player)[1]
-      if new_score > value:
+      if new_score < value:
         value = new_score
         column = col
       beta = min(beta, value)
@@ -78,8 +89,24 @@ def minimax(board, depth, alpha, beta, maximizePlayer, player):
     return column, value
 
 
+def sean_score(board, player):
+  opp = 2
+  if player == 2:
+    opp = 1
 
-def find_score(board, player):
+  score = 138
+  total = 0
+  for i in range(NUM_ROWS):
+    for j in range(NUM_COLS):
+      if (board[i][j] == player):
+        total += evaluationTable[i][j]
+      elif (board[i][j] == opp):
+        total -= evaluationTable[i][j]
+  # check if the move will win and if so give it a huge score
+  return score + total
+
+
+def noah_score(board, player):
   score = 0
   for c in range(NUM_COLS-3):
     for r in range(NUM_ROWS):
@@ -190,8 +217,8 @@ def is_won_board(player, board):
         return True
 
   return False
-  
-    
+
+
 def get_move(player, board):
   # Determine if board is empty
   if check_empty(board):
@@ -202,23 +229,32 @@ def get_move(player, board):
 
   # Determine if any of the valid moves are winning moves
   for row, col in valid_moves:
-    temp_board = board.copy()
-    temp_board[row][col] = player
-    if is_won_board(player, temp_board):
+    board[row][col] = player
+    if is_won_board(player, board):
       return {"column": col}
+    else:
+      board[row][col] = 0
 
   opp = 2
   if player == 2:
     opp = 1
 
   for row, col in valid_moves:
-    temp_board = board.copy()
-    temp_board[row][col] = opp
-    if is_won_board(opp, temp_board):
+    board[row][col] = opp
+    if is_won_board(opp, board):
       return {"column": col}
-  
-  # Looking 5 turns ahead
-  column, score = minimax(board, 10, -math.inf, math.inf, True, player)
+    else:
+      board[row][col] = 0
+
+  # Looking depth turns ahead
+  turn = np.count_nonzero(np.array(board))
+  depth = 6
+  if turn > 10 and turn < 20:
+    depth = 5
+  elif turn >= 20:
+    depth = 4
+
+  column, score = minimax(board, depth, -math.inf, math.inf, True, player)
   print(score)
   return {"column": column}
 
@@ -245,7 +281,7 @@ if __name__ == "__main__":
       board = json_data['board']
       maxTurnTime = json_data['maxTurnTime']
       player = json_data['player']
-      print(player, maxTurnTime, board)
+      # print(player, maxTurnTime, board)
 
       move = get_move(player, board)
       response = prepare_response(move)
