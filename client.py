@@ -111,6 +111,8 @@ def sean_score(board, player):
 def noah_score(board, player):
   """Given a Board and a player, return a score for how good the board state is for that player."""
   score = 0
+  normalizing_factor = 138
+
   for c in range(NUM_COLS-3):
     for r in range(NUM_ROWS):
       player_count = 0
@@ -127,9 +129,11 @@ def noah_score(board, player):
       if player_count == 3 and empty_count == 1:
         score += 5
       if player_count == 2 and empty_count == 2:
-        score += 3
+        score += 2
       if opp_count == 3 and empty_count == 1:
-        score -= 4
+        score -= 5
+      if opp_count == 2 and empty_count == 2:
+        score -= 2
       
 
   for c in range(NUM_COLS):
@@ -149,9 +153,11 @@ def noah_score(board, player):
         if player_count == 3 and empty_count == 1:
           score += 5
         if player_count == 2 and empty_count == 2:
-          score += 3
+          score += 2
         if opp_count == 3 and empty_count == 1:
-          score -= 4
+          score -= 5
+        if opp_count == 2 and empty_count == 2:
+          score -= 2
 
   for c in range(NUM_COLS-3):
     for r in range(NUM_ROWS-3):
@@ -170,9 +176,11 @@ def noah_score(board, player):
         if player_count == 3 and empty_count == 1:
           score += 5
         if player_count == 2 and empty_count == 2:
-          score += 3
+          score += 2
         if opp_count == 3 and empty_count == 1:
-          score -= 4
+          score -= 5
+        if opp_count == 2 and empty_count == 2:
+          score -= 2
 
   for c in range(NUM_COLS-3):
     for r in range(3, NUM_ROWS):
@@ -191,11 +199,13 @@ def noah_score(board, player):
         if player_count == 3 and empty_count == 1:
           score += 5
         if player_count == 2 and empty_count == 2:
-          score += 3
+          score += 2
         if opp_count == 3 and empty_count == 1:
-          score -= 4
+          score -= 5
+        if opp_count == 2 and empty_count == 2:
+          score -= 2
 
-  return score
+  return score + normalizing_factor
 
 
 def is_won_board(player, board):
