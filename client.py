@@ -9,6 +9,13 @@ import numpy as np
 NUM_ROWS = 6
 NUM_COLS = 7
 
+evaluationTable = [[3, 4, 5, 7, 5, 4, 3], 
+                  [4, 6, 8, 10, 8, 6, 4],
+                  [5, 8, 11, 13, 11, 8, 5], 
+                  [5, 8, 11, 13, 11, 8, 5],
+                  [4, 6, 8, 10, 8, 6, 4],
+                  [3, 4, 5, 7, 5, 4, 3]];
+
 def check_empty(board):
   """Checks if no moves have been made on the board"""
   board = np.array(board)
@@ -29,11 +36,45 @@ def determine_valid_moves(board):
             
   return valid_moves
 
-def check_board_for_winner(board):
-  return 1
+
+def is_won_board(player, board):
+  for c in range(NUM_COLS-3):
+	  for r in range(NUM_ROWS):
+		  if board[r][c:c+4] == [player, player, player, player]:
+			  return True
+
+  for c in range(NUM_COLS):
+	  for r in range(NUM_ROWS-3):
+		  if board[r][c] == player and board[r+1][c] == player and board[r+2][c] == player and board[r+3][c] == player:
+			  return True
+
+  for c in range(NUM_COLS-3):
+    for r in range(NUM_ROWS-3):
+      if board[r][c] == player and board[r+1][c+1] == player and board[r+2][c+2] == player and board[r+3][c+3] == player:
+        return True
+
+  for c in range(NUM_COLS-3):
+    for r in range(3, NUM_ROWS):
+      if board[r][c] == player and board[r-1][c+1] == player and board[r-2][c+2] == player and board[r-3][c+3] == player:
+        return True
+
+  return False
 
 def find_score(board, player):
-  pass
+  
+        if player == 1:
+          opp = 2
+        else:
+          opp = 1
+        score = 128;
+        sum = 0;
+        for i in range(NUM_ROWS):
+            for j in range(NUM_COLS):
+                if (board[i][j] == player):
+                    sum += evaluationTable[i][j];
+                elif (board[i][j] == opp):
+                    sum -= evaluationTable[i][j];
+        return score + sum;
 
 def minimax(board, depth, alpha, beta, maximizePlayer, player):
   opp = 2
@@ -41,7 +82,7 @@ def minimax(board, depth, alpha, beta, maximizePlayer, player):
     opp = 1
 
   valid_moves = determine_valid_moves(board)
-  current_winner = check_board_for_winner(board)
+  current_winner = is_won_board(player, board)
   if len(valid_moves) == 0 or current_winner != 0:
     # TODO - base case, return the score of the current board
     return None, 0
@@ -121,7 +162,9 @@ def get_move(player, board):
 
   # Determine if any of the valid moves are winning moves
   for row, col in valid_moves:
-    if is_winning_move(player, board, row, col):
+    temp_board = board.copy()
+    temp_board[row][col] = player
+    if is_won_board(player, temp_board):
       return {"column": col}
 
   opp = 2
@@ -129,12 +172,16 @@ def get_move(player, board):
     opp = 1
 
   for row, col in valid_moves:
-    if is_winning_move(opp, board, row, col):
+    temp_board = board.copy()
+    temp_board[row][col] = opp
+    if is_won_board(opp, temp_board):
       return {"column": col}
   
   # Looking 5 turns ahead
-  column, score = minimax(board, 5, -math.inf, math.inf, True, player)
-  return {"column": 1}
+  column, score = minimax(board, 10, -math.inf, math.inf, True, player)
+  print(score)
+  return {"column": column}
+
 
 def prepare_response(move):
   response = '{}\n'.format(json.dumps(move))
