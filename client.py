@@ -54,7 +54,7 @@ def minimax(board, depth, alpha, beta, maximizePlayer, player):
     return None, 0
   if depth == 0:
     turn = np.count_nonzero(np.array(board))
-    if turn > 15:
+    if turn >= 15:
       return None, noah_score(board, player)
     else:
       return None, sean_score(board, player)
@@ -248,11 +248,11 @@ def get_move(player, board):
 
   # Looking depth turns ahead
   turn = np.count_nonzero(np.array(board))
-  depth = 6
+  depth = 4
   if turn > 10 and turn < 20:
     depth = 5
   elif turn >= 20:
-    depth = 4
+    depth = 6
 
   column, score = minimax(board, depth, -math.inf, math.inf, True, player)
   print(score)
