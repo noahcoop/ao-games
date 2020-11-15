@@ -18,12 +18,12 @@ evaluationTable = [[3, 4, 5, 7, 5, 4, 3],
                   [3, 4, 5, 7, 5, 4, 3]]
 
 def check_empty(board):
-  """Checks if no moves have been made on the board"""
+  """Checks if no moves have been made on the board."""
   board = np.array(board)
   return board.max() == 0
 
 def determine_valid_moves(board):
-  """Returns a list of up to 7 moves a player can make"""
+  """Given a Board, returns a list of up to 7 moves a player can make."""
   valid_moves = []
   for col in range(NUM_COLS):
     if board[0][col] == 0:
@@ -38,6 +38,7 @@ def determine_valid_moves(board):
 
 
 def minimax(board, depth, alpha, beta, maximizePlayer, player):
+  """Given a Board, a depth, an alpha, a beta, boolean for maximizing, and the player, return a column and a score for that move."""
   opp = 2
   if player == 2:
     opp = 1
@@ -90,6 +91,7 @@ def minimax(board, depth, alpha, beta, maximizePlayer, player):
 
 
 def sean_score(board, player):
+  """Given a Board and a player, return a score for how good the board state is for that player."""
   opp = 2
   if player == 2:
     opp = 1
@@ -107,6 +109,7 @@ def sean_score(board, player):
 
 
 def noah_score(board, player):
+  """Given a Board and a player, return a score for how good the board state is for that player."""
   score = 0
   for c in range(NUM_COLS-3):
     for r in range(NUM_ROWS):
@@ -196,6 +199,7 @@ def noah_score(board, player):
 
 
 def is_won_board(player, board):
+  """Given a player and a board, return if that board is won for that player."""
   for c in range(NUM_COLS-3):
 	  for r in range(NUM_ROWS):
 		  if board[r][c:c+4] == [player, player, player, player]:
@@ -220,6 +224,7 @@ def is_won_board(player, board):
 
 
 def get_move(player, board):
+  """Given a player and a board, return a move that the player should make on that board."""
   # Determine if board is empty
   if check_empty(board):
     return {"column": 3}
