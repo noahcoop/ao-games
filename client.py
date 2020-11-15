@@ -106,6 +106,7 @@ def minimax(board, depth, alpha, beta, maximizePlayer, player):
     return column, value
   else:
     value = math.inf
+    column = valid_moves[0][1]
     for row, col in valid_moves:
       temp_board = board.copy()
       temp_board[row][col] = opp
