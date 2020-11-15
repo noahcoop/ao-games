@@ -60,13 +60,16 @@ def is_won_board(player, board):
 
   return False
 
+# Finds score by evaluating board using table
 def find_score(board, player):
   
         if player == 1:
           opp = 2
         else:
           opp = 1
-        score = 128;
+          #might not be necessary
+          player = 2
+        score = 138;
         sum = 0;
         for i in range(NUM_ROWS):
             for j in range(NUM_COLS):
@@ -74,6 +77,7 @@ def find_score(board, player):
                     sum += evaluationTable[i][j];
                 elif (board[i][j] == opp):
                     sum -= evaluationTable[i][j];
+        # check if the move will win and if so give it a huge score
         return score + sum;
 
 def minimax(board, depth, alpha, beta, maximizePlayer, player):
@@ -104,6 +108,7 @@ def minimax(board, depth, alpha, beta, maximizePlayer, player):
       if alpha >= beta:
         break
     return column, value
+  # Minimize opponent
   else:
     value = math.inf
     column = valid_moves[0][1]
@@ -111,48 +116,15 @@ def minimax(board, depth, alpha, beta, maximizePlayer, player):
       temp_board = board.copy()
       temp_board[row][col] = opp
       new_score = minimax(temp_board, depth - 1, alpha, beta, True, player)[1]
-      if new_score > value:
+      if new_score < value:
         value = new_score
         column = col
       beta = min(beta, value)
       if beta <= alpha:
         break
     return column, value
-
-
-
-
-def is_winning_move(player, board, row, column):
-    '''Checks move to see if it is a winning move'''
-
-    #Horizontal
-    if column <= 3 and board[row][column + 1] == player and board[row][column + 2] == player and board[row][column + 3] == player:
-      return True
-          
-    elif column >= 3 and board[row][column - 1] == player and board[row][column - 2] == player and board[row][column - 3] == player:
-      return True
-          
-    elif (column >= 1 and column <= 4) and board[row][column - 1] == player and board[row][column + 1] == player and board[row][column + 1] == player:
-      return True
-    
-    elif (column >= 2 and column <= 5) and board[row][column + 1] == player and board[row][column - 1] == player and board[row][column - 2] == player:
-      return True
-    
-    #Vertical
-    elif (row <= 2) and board[row + 1][column] == player and board[row + 2][column] == player and board[row + 3][column] == player:
-      return True
   
-    #Diagonal
-    elif column <= 3 and row <= 2 and board[row + 1][column + 1] == player and board[row + 2][column + 2] == player and board[row + 3][column + 3] == player:
-      return True
-  
-    elif column >= 3 and row >= 2 and board[row - 1][column - 1] == player and board[row - 2][column - 2] == player and board[row - 3][column - 3] == player:
-      return True
-
-    # TODO - Add remaining diagonal cases
-    return False
-  
-    
+#gets move to play   
 def get_move(player, board):
   # Determine if board is empty
   if check_empty(board):
@@ -163,23 +135,24 @@ def get_move(player, board):
 
   # Determine if any of the valid moves are winning moves
   for row, col in valid_moves:
-    temp_board = board.copy()
-    temp_board[row][col] = player
-    if is_won_board(player, temp_board):
+    board[row][col] = player
+    if is_won_board(player, board):
       return {"column": col}
-
+    else:
+      board[row][col] = 0
   opp = 2
   if player == 2:
     opp = 1
-
   for row, col in valid_moves:
-    temp_board = board.copy()
-    temp_board[row][col] = opp
-    if is_won_board(opp, temp_board):
+    board[row][col] = opp
+    if is_won_board(opp, board):
       return {"column": col}
+    else:
+      board[row][col] = 0
+    
   
   # Looking 5 turns ahead
-  column, score = minimax(board, 10, -math.inf, math.inf, True, player)
+  column, score = minimax(board, 5, -math.inf, math.inf, True, player)
   print(score)
   return {"column": column}
 
