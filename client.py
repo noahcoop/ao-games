@@ -1,5 +1,9 @@
 #!/usr/bin/python
-
+""""
+Referenced Articles:
+  https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning
+  https://medium.com/analytics-vidhya/artificial-intelligence-at-play-connect-four-minimax-algorithm-explained-3b5fc32e4a4f
+"""
 import sys
 import json
 import socket
@@ -25,9 +29,11 @@ def check_empty(board):
 def determine_valid_moves(board):
   """Given a Board, returns a list of up to 7 moves a player can make."""
   valid_moves = []
+  #iterate through the columns and if they are not full 
   for col in range(NUM_COLS):
     if board[0][col] == 0:
       for row in range(NUM_ROWS):
+        # write what is a valid move in that column
         if board[row][col] != 0:
           valid_moves.append([row - 1, col])
           break
@@ -42,11 +48,12 @@ def minimax(board, depth, alpha, beta, maximizePlayer, player):
   opp = 2
   if player == 2:
     opp = 1
-
+  
   valid_moves = determine_valid_moves(board)
   player_win = is_won_board(player, board)
   opp_win = is_won_board(opp, board)
-
+  
+  #Checks for if either player can win on this turn 
   if player_win:
     return None, math.inf
   elif opp_win:
@@ -59,7 +66,8 @@ def minimax(board, depth, alpha, beta, maximizePlayer, player):
       return None, noah_score(board, player)
     else:
       return None, sean_score(board, player)
-
+    
+  # Finds the Maximum score for all valid moves for the Players turn
   if maximizePlayer:
     value = -math.inf
     column = valid_moves[0][1]
@@ -74,6 +82,7 @@ def minimax(board, depth, alpha, beta, maximizePlayer, player):
       if alpha >= beta:
         break
     return column, value
+  # Finds the Minimum score for all valid moves for the opponents turn
   else:
     value = math.inf
     column = valid_moves[0][1]
@@ -98,13 +107,14 @@ def sean_score(board, player):
 
   score = 138
   total = 0
+  #evaluates the Board using the evaluation table provided above using a base score of 138
   for i in range(NUM_ROWS):
     for j in range(NUM_COLS):
       if (board[i][j] == player):
         total += evaluationTable[i][j]
       elif (board[i][j] == opp):
         total -= evaluationTable[i][j]
-  # check if the move will win and if so give it a huge score
+  
   return score + total
 
 
@@ -112,7 +122,7 @@ def noah_score(board, player):
   """Given a Board and a player, return a score for how good the board state is for that player."""
   score = 0
   normalizing_factor = 138
-
+  #counts the number of player, opponent, and empty spaces in a section of the board and assigns a score based off of this value
   for c in range(NUM_COLS-3):
     for r in range(NUM_ROWS):
       player_count = 0
@@ -214,17 +224,17 @@ def is_won_board(player, board):
 	  for r in range(NUM_ROWS):
 		  if board[r][c:c+4] == [player, player, player, player]:
 			  return True
-
+  #check horizontal
   for c in range(NUM_COLS):
 	  for r in range(NUM_ROWS-3):
 		  if board[r][c] == player and board[r+1][c] == player and board[r+2][c] == player and board[r+3][c] == player:
 			  return True
-
+  #check diagonal
   for c in range(NUM_COLS-3):
     for r in range(NUM_ROWS-3):
       if board[r][c] == player and board[r+1][c+1] == player and board[r+2][c+2] == player and board[r+3][c+3] == player:
         return True
-
+  #check vertical
   for c in range(NUM_COLS-3):
     for r in range(3, NUM_ROWS):
       if board[r][c] == player and board[r-1][c+1] == player and board[r-2][c+2] == player and board[r-3][c+3] == player:
@@ -242,7 +252,7 @@ def get_move(player, board):
   # Determine valid moves
   valid_moves = determine_valid_moves(board)
 
-  # Determine if any of the valid moves are winning moves
+  # Determine if you can win on this turn, if so play it
   for row, col in valid_moves:
     board[row][col] = player
     if is_won_board(player, board):
@@ -253,7 +263,7 @@ def get_move(player, board):
   opp = 2
   if player == 2:
     opp = 1
-
+  # Determine if oppoent can win on this turn, if so block it
   for row, col in valid_moves:
     board[row][col] = opp
     if is_won_board(opp, board):
@@ -268,7 +278,8 @@ def get_move(player, board):
     depth = 5
   elif turn >= 20:
     depth = 6
-
+  
+  #call minimax to find best move
   column, score = minimax(board, depth, -math.inf, math.inf, True, player)
   print(score)
   return {"column": column}
